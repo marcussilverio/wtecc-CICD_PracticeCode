@@ -10,3 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: python:3.9-slim
+    services:
+      redis:
+        image: redis:6-alpine
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r requirements.txt
+      - name: Run init tests with nose
+        run: nosetests
+        env:  
+          DATABASE_URI: "redis://redis:6379"
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v2
+        with:
+          version: "v0.1.13"
